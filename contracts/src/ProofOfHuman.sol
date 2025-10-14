@@ -30,7 +30,7 @@ contract ProofOfHuman is SelfVerificationRoot {
      */
     constructor(
         address identityVerificationHubV2Address,
-        string memory scope, 
+        string memory scope,
         SelfUtils.UnformattedVerificationConfigV2 memory _verificationConfig
     )
         SelfVerificationRoot(identityVerificationHubV2Address, scope)
@@ -46,7 +46,6 @@ contract ProofOfHuman is SelfVerificationRoot {
      * @param output The verification output from the hub
      * @param userData The user data passed through verification
      */
-
     function customVerificationHook(
         ISelfVerificationRoot.GenericDiscloseOutputV2 memory output,
         bytes memory userData
