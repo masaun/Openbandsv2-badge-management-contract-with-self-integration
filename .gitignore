@@ -27,6 +27,7 @@ contracts/out/
 contracts/lib/
 contracts/broadcast/
 contracts/docs/
+foundry.lock
 
 # Foundry broadcast logs (allow structure but ignore specific deployments)
 !/broadcast
