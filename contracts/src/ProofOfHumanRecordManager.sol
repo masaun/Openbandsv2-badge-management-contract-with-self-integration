@@ -2,8 +2,9 @@
 pragma solidity 0.8.28;
 
 import { IIdentityVerificationHubV2 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV2.sol" ;
-import { ProofOfHuman } from "./ProofOfHuman.sol";
+import { ISelfVerificationRoot } from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
 
+import { ProofOfHuman } from "./ProofOfHuman.sol";
 import { DataType } from "./dataType/DataType.sol";
 
 /**
@@ -28,7 +29,7 @@ contract ProofOfHumanRecordManager {
     function storeVerificationData(
         bytes calldata proofPayload, 
         bytes calldata userContextData, 
-        bool status
+        bool /* status */
     ) public returns (bool) {
         // @dev - A wallet address of user who is a caller (msg.sender).
         address walletAddress = msg.sender;
@@ -40,12 +41,18 @@ contract ProofOfHumanRecordManager {
         // @dev - Get a verification config ID from the ProofOfHuman contract
         bytes32 verificationConfigId = proofOfHuman.verificationConfigId();
 
+        // @dev - Get a nullifier from the CustomVerifier#customVerify() via the ProofOfHuman contract (destructuring the tuple)
+        (, , uint256 nullifier, , , , , , , ) = proofOfHuman.lastOutput();
+
         // @dev - Store the verification status from ProofOfHuman and a given wallet address
         proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
             verificationConfigId: verificationConfigId,
+            nullifier: nullifier, // @dev - The nullifier of the GenericDiscloseOutputV2 struct should be stored into here.
             walletAddress: walletAddress,
             createdAt: block.timestamp
         });
+
+        return true;
     }
 
     function getLastVerifiedUser() public view returns (address) {
