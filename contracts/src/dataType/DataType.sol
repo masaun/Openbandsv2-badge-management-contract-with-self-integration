@@ -6,7 +6,7 @@ library DataType {
         //string domain;
         //bytes32 nullifierHash;
         address walletAddress;
-        string createdAt;
+        uint256 createdAt;
     }
 
 }
