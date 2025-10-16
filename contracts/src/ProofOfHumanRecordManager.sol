@@ -24,8 +24,12 @@ contract ProofOfHumanRecordManager {
 
     /**
      * @notice - Verify if the user has a valid proof of humanity.
+     * @dev - SelfVerificationRoot# verifySelfProof() is the write function - And therefore, a caller needs to pay for a gas fee.
      */
-    function verifyProof(bytes memory /* proofPayload */, bytes memory /* userContextData */) public view returns (bool) {
+    function verifyProof(bytes calldata proofPayload, bytes calldata userContextData) public returns (bool) {
+        // @dev - SelfVerificationRoot# verifySelfProof()
+        proofOfHuman.verifySelfProof(proofPayload, userContextData);
+        
         // Check if verification was successful in the ProofOfHuman contract
         return proofOfHuman.verificationSuccessful();
     }
@@ -36,8 +40,12 @@ contract ProofOfHumanRecordManager {
     function storeVerificationStatus(address walletAddress, bool status) public {
         require(walletAddress != address(0), "Invalid user address");
 
+        // @dev - Get a verification config ID from the ProofOfHuman contract
+        bytes32 verificationConfigId = proofOfHuman.verificationConfigId();
+
         // @dev - Store the verification status from ProofOfHuman and a given wallet address
         proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
+            verificationConfigId: verificationConfigId,
             walletAddress: walletAddress,
             createdAt: block.timestamp
         });
