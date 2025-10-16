@@ -5,9 +5,8 @@ import { IIdentityVerificationHubV2 } from "@selfxyz/contracts/contracts/interfa
 import { ProofOfHuman } from "./ProofOfHuman.sol";
 
 /**
- * @title TestSelfVerificationRoot
- * @notice Test implementation of SelfVerificationRoot for testing purposes
- * @dev This contract provides a concrete implementation of the abstract SelfVerificationRoot
+ * @notice - The Self On-Chain Records contract can verify a proof of humanity from the ProofOfHuman contract.
+ * @notice - The Self On-Chain Records contract that the verification status from ProofOfHuman and a given wallet address are stored and associated.
  */
 contract SelfOnChainRecords {
 

@@ -47,7 +47,7 @@ contract ProofOfHuman is SelfVerificationRoot {
      * @param userData The user data passed through verification
      */
     function customVerificationHook(
-        ISelfVerificationRoot.GenericDiscloseOutputV2 memory output,
+        ISelfVerificationRoot.GenericDiscloseOutputV2 memory output, // @dev - Currently, only output-of-disclose is specificied.
         bytes memory userData
     )
         internal
