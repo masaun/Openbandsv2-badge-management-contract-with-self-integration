@@ -33,9 +33,14 @@ contract ProofOfHumanRecordManager {
     /**
      * @notice - Store the verification status from ProofOfHuman and a given wallet address into this contract and associate them.
      */
-    function storeVerificationStatus(address user, bool status) public {
-        // Store the verification status and user address
-        require(user != address(0), "Invalid user address");
+    function storeVerificationStatus(address walletAddress, bool status) public {
+        require(walletAddress != address(0), "Invalid user address");
+
+        // @dev - Store the verification status from ProofOfHuman and a given wallet address
+        proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
+            walletAddress: walletAddress,
+            createdAt: block.timestamp
+        });
     }
 
 
