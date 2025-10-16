@@ -23,22 +23,19 @@ contract ProofOfHumanRecordManager {
     }
 
     /**
-     * @notice - Verify if the user has a valid proof of humanity.
-     * @dev - SelfVerificationRoot# verifySelfProof() is the write function - And therefore, a caller needs to pay for a gas fee.
+     * @notice - Store the verification data of a given wallet address (of user who is a caller) into this contract to associate those data with a given wallet address (of user who is a caller).
      */
-    function verifyProof(bytes calldata proofPayload, bytes calldata userContextData) public returns (bool) {
-        // @dev - SelfVerificationRoot# verifySelfProof()
-        proofOfHuman.verifySelfProof(proofPayload, userContextData);
-        
-        // Check if verification was successful in the ProofOfHuman contract
-        return proofOfHuman.verificationSuccessful();
-    }
-
-    /**
-     * @notice - Store the verification status from ProofOfHuman and a given wallet address into this contract and associate them.
-     */
-    function storeVerificationStatus(address walletAddress, bool status) public {
+    function storeVerificationData(
+        bytes calldata proofPayload, 
+        bytes calldata userContextData, 
+        bool status
+    ) public returns (bool) {
+        // @dev - A wallet address of user who is a caller (msg.sender).
+        address walletAddress = msg.sender;
         require(walletAddress != address(0), "Invalid user address");
+
+        // @dev - Verify if the user has a valid proof of humanity.
+        _verifyProof(proofPayload, userContextData); // @dev - A caller needs to pay for a gas fee - because the _verifyProof() is a write function.
 
         // @dev - Get a verification config ID from the ProofOfHuman contract
         bytes32 verificationConfigId = proofOfHuman.verificationConfigId();
@@ -51,10 +48,22 @@ contract ProofOfHumanRecordManager {
         });
     }
 
-
     function getLastVerifiedUser() public view returns (address) {
         return proofOfHuman.lastUserAddress();
     }
 
+
+    /**
+     * @notice - Verify if the user has a valid proof of humanity.
+     * @notice - This function is a write function and requires a gas fee.
+     * @dev - The SelfVerificationRoot# verifySelfProof() is the write function - And therefore, a caller needs to pay for a gas fee.
+     */
+    function _verifyProof(bytes calldata proofPayload, bytes calldata userContextData) internal returns (bool) {
+        // @dev - SelfVerificationRoot# verifySelfProof(), which initiates the Complete Verification Flow (https://docs.self.xyz/technical-docs/verification-in-the-identityverificationhub#complete-verification-flowhttps://docs.self.xyz/technical-docs/verification-in-the-identityverificationhub#complete-verification-flow)
+        proofOfHuman.verifySelfProof(proofPayload, userContextData);
+        
+        // Check if verification was successful in the ProofOfHuman contract
+        return proofOfHuman.verificationSuccessful();
+    }
 
 }
