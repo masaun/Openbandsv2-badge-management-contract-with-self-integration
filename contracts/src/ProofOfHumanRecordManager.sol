@@ -4,13 +4,17 @@ pragma solidity 0.8.28;
 import { IIdentityVerificationHubV2 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV2.sol" ;
 import { ProofOfHuman } from "./ProofOfHuman.sol";
 
+import { DataType } from "./dataType/DataType.sol";
+
 /**
  * @notice - The Self On-Chain Records contract can verify a proof of humanity from the ProofOfHuman contract.
  * @notice - The Self On-Chain Records contract that the verification status from ProofOfHuman and a given wallet address are stored and associated.
  */
 contract ProofOfHumanRecordManager {
-
     ProofOfHuman public proofOfHuman;
+
+    // @dev - Store an individual's proof related record.
+    mapping (address => DataType.ProofOfHumanRecord) public proofOfHumanRecords;
 
     constructor(
         ProofOfHuman _proofOfHuman
