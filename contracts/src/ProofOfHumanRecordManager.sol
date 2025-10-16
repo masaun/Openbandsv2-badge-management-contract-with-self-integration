@@ -42,12 +42,15 @@ contract ProofOfHumanRecordManager {
         bytes32 verificationConfigId = proofOfHuman.verificationConfigId();
 
         // @dev - Get a nullifier from the CustomVerifier#customVerify() via the ProofOfHuman contract (destructuring the tuple)
-        (, , uint256 nullifier, , , , , , , ) = proofOfHuman.lastOutput();
+        (, , uint256 nullifier, , , , , , , ) = proofOfHuman.lastOutput(); // @dev - The nullifier of the GenericDiscloseOutputV2 struct should be stored into here.
+        
+        // @dev - Check whether a given nullifier is already used or not to prevent a double-spending (or a replay attack).
+        require(nullifier != 0, "Invalid nullifier");
 
         // @dev - Store the verification status from ProofOfHuman and a given wallet address
         proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
             verificationConfigId: verificationConfigId,
-            nullifier: nullifier, // @dev - The nullifier of the GenericDiscloseOutputV2 struct should be stored into here.
+            nullifier: nullifier,
             walletAddress: walletAddress,
             createdAt: block.timestamp
         });
