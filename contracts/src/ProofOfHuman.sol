@@ -61,10 +61,16 @@ contract ProofOfHuman is SelfVerificationRoot {
         emit VerificationCompleted(output, userData);
     }
 
+    /**
+     * @notice - Set/Update a new verification config ID
+     */
     function setConfigId(bytes32 configId) external {
         verificationConfigId = configId;
     }
 
+    /**
+     * @notice - Get a verification config ID
+     */
     function getConfigId(
         bytes32, /* destinationChainId */
         bytes32, /* userIdentifier */

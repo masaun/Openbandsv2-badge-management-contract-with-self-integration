@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+import { IIdentityVerificationHubV2 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV2.sol" ;
+import { ISelfVerificationRoot } from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
+
+import { ProofOfHuman } from "./ProofOfHuman.sol";
+import { DataType } from "./dataType/DataType.sol";
+
+/**
+ * @notice - The Self On-Chain Records contract can verify a proof of humanity from the ProofOfHuman contract.
+ * @notice - The Self On-Chain Records contract that the verification status from ProofOfHuman and a given wallet address are stored and associated.
+ */
+contract ProofOfHumanRecordManager {
+    ProofOfHuman public proofOfHuman;
+
+    // @dev - Store an individual's proof related record.
+    mapping (address => DataType.ProofOfHumanRecord) public proofOfHumanRecords;
+
+    constructor(
+        ProofOfHuman _proofOfHuman
+    ) {
+        proofOfHuman = _proofOfHuman;
+    }
+
+    /**
+     * @notice - Store the verification data of a given wallet address (of user who is a caller) into this contract to associate those data with a given wallet address (of user who is a caller).
+     */
+    function storeVerificationData(
+        bytes calldata proofPayload, 
+        bytes calldata userContextData, 
+        bool /* status */
+    ) public returns (bool) {
+        // @dev - A wallet address of user who is a caller (msg.sender).
+        address walletAddress = msg.sender;
+        require(walletAddress != address(0), "Invalid user address");
+
+        // @dev - Verify if the user has a valid proof of humanity.
+        _verifyProof(proofPayload, userContextData); // @dev - A caller needs to pay for a gas fee - because the _verifyProof() is a write function.
+
+        // @dev - Get a verification config ID from the ProofOfHuman contract
+        bytes32 verificationConfigId = proofOfHuman.verificationConfigId();
+
+        // @dev - Get a nullifier from the CustomVerifier#customVerify() via the ProofOfHuman contract (destructuring the tuple)
+        (, , uint256 nullifier, , , , , , , ) = proofOfHuman.lastOutput(); // @dev - The nullifier of the GenericDiscloseOutputV2 struct should be stored into here.
+        
+        // @dev - Check whether a given nullifier is already used or not to prevent a double-spending (or a replay attack).
+        require(nullifier != 0, "Invalid nullifier");
+
+        // @dev - Store the verification status from ProofOfHuman and a given wallet address
+        proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
+            verificationConfigId: verificationConfigId,
+            nullifier: nullifier,
+            walletAddress: walletAddress,
+            createdAt: block.timestamp
+        });
+
+        return true;
+    }
+
+    function getLastVerifiedUser() public view returns (address) {
+        return proofOfHuman.lastUserAddress();
+    }
+
+
+    /**
+     * @notice - Verify if the user has a valid proof of humanity.
+     * @notice - This function is a write function and requires a gas fee.
+     * @dev - The SelfVerificationRoot# verifySelfProof() is the write function - And therefore, a caller needs to pay for a gas fee.
+     */
+    function _verifyProof(bytes calldata proofPayload, bytes calldata userContextData) internal returns (bool) {
+        // @dev - SelfVerificationRoot# verifySelfProof(), which initiates the Complete Verification Flow (https://docs.self.xyz/technical-docs/verification-in-the-identityverificationhub#complete-verification-flowhttps://docs.self.xyz/technical-docs/verification-in-the-identityverificationhub#complete-verification-flow)
+        proofOfHuman.verifySelfProof(proofPayload, userContextData);
+        
+        // Check if verification was successful in the ProofOfHuman contract
+        return proofOfHuman.verificationSuccessful();
+    }
+
+}
