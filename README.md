@@ -1,3 +1,12 @@
+# Self On-Chain Verifier
+
+## Overview
+
+
+<br>
+
+<hr>
+
 # Self Protocol Workshop
 
 Learn to build privacy-preserving identity verification with [Self Protocol](https://self.xyz/) - from frontend QR codes to smart contract attestations on Celo.
