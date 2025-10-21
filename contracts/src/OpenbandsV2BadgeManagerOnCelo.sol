@@ -61,10 +61,20 @@ contract OpenbandsV2BadgeManagerOnCelo {
         return true;
     }
 
+    /**
+     * @notice - Get the proof of humanity record for a specific user.
+     * @param user - User's wallet address
+     */
+    function getProofOfHumanRecord(address user) public view returns (DataType.ProofOfHumanRecord memory) {
+        return proofOfHumanRecords[user];
+    }
+
+    /**
+     * @notice - Get the last verified user address from the ProofOfHuman contract.
+     */
     function getLastVerifiedUser() public view returns (address) {
         return proofOfHuman.lastUserAddress();
     }
-
 
     /**
      * @notice - Verify if the user has a valid proof of humanity.
