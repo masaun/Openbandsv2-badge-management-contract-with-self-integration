@@ -30,13 +30,15 @@ contract OpenbandsV2BadgeManagerOnCelo {
      * @param userContextData - The user context data to be passed through the verification process
      */
     function storeVerificationData(
+        bool isAboveMinimumAge, 
+        bool isValidNationality,
         bytes calldata proofPayload, 
         bytes calldata userContextData, 
         bool /* status */
     ) public returns (bool) {
         // @dev - A wallet address of user who is a caller (msg.sender).
-        address walletAddress = msg.sender;
-        require(walletAddress != address(0), "Invalid user address");
+        address userAddress = msg.sender;
+        require(userAddress != address(0), "Invalid user address");
 
         // @dev - Verify if the user has a valid proof of humanity.
         _verifyProof(proofPayload, userContextData); // @dev - A caller needs to pay for a gas fee - because the _verifyProof() is a write function.
@@ -50,11 +52,18 @@ contract OpenbandsV2BadgeManagerOnCelo {
         // @dev - Check whether a given nullifier is already used or not to prevent a double-spending (or a replay attack).
         require(nullifier != 0, "Invalid nullifier");
 
-        // @dev - Store the verification status from ProofOfHuman and a given wallet address
-        proofOfHumanRecords[walletAddress] = DataType.ProofOfHumanRecord({
+        // @dev - Get a minimum age from a given proofPayload
+        //(, uint32 minimumAge, , , , , , , , ) = proofPayload; // @dev - The minimumAge of the GenericDiscloseOutputV2 struct should be stored into here.
+        //(, uint32 minimumAge, , , , , , , , ) = abi.decode(proofPayload, (uint256, address));
+
+        // @dev - Store the verification status from ProofOfHuman and a given user's wallet address
+        proofOfHumanRecords[userAddress] = DataType.ProofOfHumanRecord({
             verificationConfigId: verificationConfigId,
+            chainId: block.chainid,
+            userAddress: userAddress,               // @dev - "User ID" in Self.xyz
+            isAboveMinimumAge: isAboveMinimumAge,   // @dev - "minimumAge" can also be retrieved from a given proofPayload
+            isValidNationality: isValidNationality, // @dev - "nationality" can also be retrieved from a given proofPayload
             nullifier: nullifier,
-            walletAddress: walletAddress,
             createdAt: block.timestamp
         });
 
