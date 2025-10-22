@@ -1,3 +1,18 @@
+# Self On-Chain Verifier contract
+
+## SC deployment script
+
+- Deploy the `OpenbandsV2BadgeManagerOnCelo.sol` on Celo Testnet
+```bash
+cd contracts
+sh script/celo-testnet/deployment/deploymentScript_OpenbandsV2BadgeManagerOnCelo_via_celoscan.sh
+```
+
+
+<br>
+
+<hr>
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
