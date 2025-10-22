@@ -29,7 +29,7 @@ contract OpenbandsV2BadgeManagerOnCelo {
      */
     function storeVerificationData(
         bool isAboveMinimumAge, 
-        bool isValidNationality,
+        bool isValidNationality
         //bytes calldata proofPayload, 
         //bytes calldata userContextData, 
         //bool /* status */
