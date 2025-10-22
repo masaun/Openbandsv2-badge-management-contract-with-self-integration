@@ -32,7 +32,7 @@ contract OpenbandsV2BadgeManagerOnCelo {
         bool isValidNationality,
         //bytes calldata proofPayload, 
         //bytes calldata userContextData, 
-        bool /* status */
+        //bool /* status */
     ) public returns (bool) {
         // @dev - A wallet address of user who is a caller (msg.sender).
         address userAddress = msg.sender;
